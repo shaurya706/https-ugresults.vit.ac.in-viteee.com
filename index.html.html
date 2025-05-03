@@ -1,0 +1,175 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITEEE Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #F5F5F5;
+        }
+        .header-bg {
+            background-color: #003087;
+            color: white;
+        }
+        .nav-bg {
+            background-color: #0055A4;
+        }
+        .nav-link {
+            color: white;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+        }
+        .nav-link:hover {
+            background-color: #004080;
+        }
+        .logout-btn {
+            background-color: #C00000;
+            color: white;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background-color: #A00000;
+        }
+        .table-header {
+            background-color: #003087;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+        .table-label {
+            background-color: #003087;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: normal;
+            padding: 0.5rem;
+            border: 1px solid #002060;
+        }
+        .table-value {
+            background-color: #E6E6E6;
+            font-size: 0.875rem;
+            padding: 0.5rem;
+            border: 1px solid #002060;
+        }
+        .rank-label {
+            background-color: #003087;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.5rem;
+            border: 1px solid #002060;
+        }
+        .rank-value {
+            background-color: #006400;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.5rem;
+            border: 1px solid #002060;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-bg text-center py-4">
+        <div class="flex justify-center items-center">
+            <div class="text-2xl font-bold">VIT</div>
+        </div>
+        <h1 class="text-xl font-semibold mt-2">Online Counselling for B.Tech. Admissions (2025 – 26)</h1>
+        <p class="text-sm mt-1">Welcome, SHAURYA RATHORE - 20255338203</p>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bg flex justify-between">
+        <div class="flex">
+            <a href="#" class="nav-link">VITEEE Result</a>
+            <a href="#" class="nav-link">Counselling Instructions</a>
+            <a href="#" class="nav-link">Counselling Fee</a>
+            <a href="#" class="nav-link">Important Dates</a>
+            <a href="#" class="nav-link">Fee Details</a>
+            <a href="#" class="nav-link">Choice Filling</a>
+            <a href="#" class="nav-link">Seat Allotment</a>
+            <a href="#" class="nav-link">Contacts</a>
+        </div>
+        <a href="#" class="logout-btn">Log out</a>
+    </div>
+
+    <!-- Results Table -->
+    <div class="flex justify-center mt-6">
+        <table class="w-full max-w-md border-collapse">
+            <tr>
+                <th class="table-header py-2" colspan="2">VITEEE 2025 Result</th>
+            </tr>
+            <tr>
+                <td class="table-label">Application Number</td>
+                <td class="table-value">20255338203</td>
+            </tr>
+            <tr>
+                <td class="table-label">Candidate Name</td>
+                <td class="table-value">SHAURYA RATHORE</td>
+            </tr>
+            <tr>
+                <td class="table-label">Gender</td>
+                <td class="table-value">MALE</td>
+            </tr>
+            <tr>
+                <td class="table-label">Date of Birth</td>
+                <td class="table-value">06-JUL-2007</td>
+            </tr>
+            <tr>
+                <td class="table-label">Subject</td>
+                <td class="table-value">MPCEA</td>
+            </tr>
+            <tr>
+                <td class="rank-label">VITEEE RANK</td>
+                <td class="rank-value">18465</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
